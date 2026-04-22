@@ -27,30 +27,51 @@ A **Streamlit dashboard** is also included to visualize real-time transfer stati
 ## 🏗️ System Architecture
 
 ```
-Client
-   │
-   │  REQUEST filename
-   ▼
-Server
-   │
-   │  Packetized file transfer
-   ▼
-ACK System (Stop-and-Wait ARQ)
-   │
-Timeout & Retransmission
-   │
-Packet Loss Simulation
-   ▼
-Statistics Collection
-   ▼
-Streamlit Dashboard
+Client 1 ─┐
+Client 2 ─┼──► Server (Multi-threaded)
+Client 3 ─┘
+                │
+                ▼
+        Independent Threads
+                │
+                ▼
+         File Transfer + ARQ
+                │
+                ▼
+         stats.json (per client)
+                │
+                ▼
+        Streamlit Dashboard
 ```
 
 ---
 
+## 👥 Multi-Client Support
+
+The server supports multiple clients simultaneously using **thread-based concurrency**.
+
+Each incoming client request is handled in a separate thread.
+
+
+### How it works:
+- Each client is identified using its IP and port (`IP:PORT`)
+- Every client runs independently in its own thread
+- File transfers occur concurrently without blocking other clients
+
+### Statistics Handling:
+- Each client has separate statistics stored in `stats.json`
+- The dashboard displays per-client metrics such as:
+  - Packets sent
+  - Retransmissions
+  - Packet loss
+  - Transfer time
+
+This ensures scalable handling of multiple clients and real-time monitoring.
+
 ## ⚙️ Features
 
 - UDP-based client-server communication  
+- Multi-client support using threading  
 - File request system  
 - Packetized file transfer (1024 bytes per packet)  
 - Sequence numbering for reliability  
@@ -151,7 +172,7 @@ This simulates real network packet loss conditions.
 
 # Dashboard
 
-The dashboard displays real-time statistics including:
+Displays real-time statistics for **multiple clients**, including:
 
 * Packets sent
 * Retransmissions
