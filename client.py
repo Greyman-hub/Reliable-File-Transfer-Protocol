@@ -3,7 +3,7 @@ import os
 
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-server_address = ("192.168.31.57", 9090)
+server_address = ("x.x.x.x", 9090)
 
 filename = input("Enter file name: ")
 
